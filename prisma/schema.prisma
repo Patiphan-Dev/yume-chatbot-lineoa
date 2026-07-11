@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LineUser {
+  id                String             @id @default(cuid())
+  lineUserId        String             @unique
+  displayName       String?
+  pictureUrl        String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  conversationState ConversationState?
+  insuranceRequests InsuranceRequest[]
+
+  @@map("line_users")
+}
+
+model ConversationState {
+  id                    String         @id @default(cuid())
+  lineUserId            String         @unique
+  step                  ConversationStep @default(MAIN_MENU)
+  selectedService       Service?
+  selectedInsuranceType InsuranceType?
+  updatedAt             DateTime       @updatedAt
+  user                  LineUser       @relation(fields: [lineUserId], references: [lineUserId])
+
+  @@map("conversation_states")
+}
+
+model InsuranceRequest {
+  id              String        @id @default(cuid())
+  lineUserId      String
+  insuranceType   InsuranceType
+  status          RequestStatus @default(PENDING)
+  carRegistration String?
+  province        String?
+  brand           String?
+  model           String?
+  year            Int?
+  quotedPremium   Int?
+  quoteNote       String?
+  quotedAt        DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            LineUser      @relation(fields: [lineUserId], references: [lineUserId])
+
+  @@map("insurance_requests")
+}
+
+enum ConversationStep {
+  MAIN_MENU
+  AWAITING_INSURANCE_TYPE
+  AWAITING_CAR_INFO
+  SUBMITTED
+}
+
+enum Service {
+  CHECK_PREMIUM
+  RENEW_PREMIUM
+  INQUIRY
+  OTHER
+}
+
+enum InsuranceType {
+  CAR_CLASS_1
+  CAR_CLASS_2_3
+  RENTAL_COMMERCIAL
+  LUXURY_SUPERCAR
+  EV
+  FIRE
+  CONSTRUCTION
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  IN_REVIEW
+  QUOTED
+  CLOSED
+}

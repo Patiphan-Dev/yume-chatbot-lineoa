@@ -1,0 +1,34 @@
+# If 5432 or 3000 are already taken on your machine (common with another local Postgres or
+# dev server running), just change the left side of the port mappings below, e.g. "5433:5432".
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: yume
+      POSTGRES_PASSWORD: yume
+      POSTGRES_DB: yume_chatbot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yume"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    env_file: .env
+    environment:
+      # Overrides the .env value — inside the Docker network, Postgres is reachable by service
+      # name, not localhost.
+      DATABASE_URL: postgresql://yume:yume@postgres:5432/yume_chatbot
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
