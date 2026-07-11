@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "postinstall": "prisma generate",
     "build": "tsc -p tsconfig.json",
     "postbuild": "mkdir -p dist/richMenu/assets && cp src/richMenu/assets/*.png src/richMenu/assets/*.jpg dist/richMenu/assets/",
     "start": "node dist/server.js",
