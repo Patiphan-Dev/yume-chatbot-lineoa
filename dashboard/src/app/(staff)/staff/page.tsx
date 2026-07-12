@@ -1,5 +1,6 @@
 import { requireAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { formatStaffCode } from "@/lib/staffCode";
 import { AddStaffForm, StaffRowActions } from "./StaffManager";
 
 export default async function StaffManagementPage() {
@@ -20,6 +21,7 @@ export default async function StaffManagementPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
+              <th className="px-4 py-3">รหัสสมาชิก</th>
               <th className="px-4 py-3">ชื่อ</th>
               <th className="px-4 py-3">ชื่อผู้ใช้</th>
               <th className="px-4 py-3">สถานะ</th>
@@ -30,6 +32,9 @@ export default async function StaffManagementPage() {
           <tbody>
             {staffMembers.map((staff) => (
               <tr key={staff.id} className="border-b border-neutral-100 last:border-0">
+                <td className="px-4 py-3 font-mono text-xs font-semibold text-amber-800">
+                  {formatStaffCode(staff.codeNumber)}
+                </td>
                 <td className="px-4 py-3 font-medium text-neutral-900">{staff.name}</td>
                 <td className="px-4 py-3 text-neutral-600">{staff.username}</td>
                 <td className="px-4 py-3">
@@ -59,7 +64,7 @@ export default async function StaffManagementPage() {
             ))}
             {staffMembers.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-neutral-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-neutral-400">
                   ยังไม่มีสมาชิก — เพิ่มสมาชิกคนแรกได้จากฟอร์มด้านบน
                 </td>
               </tr>

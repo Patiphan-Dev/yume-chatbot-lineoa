@@ -78,6 +78,9 @@ model QuoteAttachment {
 // admin (username "admin" + STAFF_DASHBOARD_PASSWORD) lives in env, not here.
 model StaffMember {
   id           String   @id @default(cuid())
+  // Sequential member number, rendered as "YM-001" — assigned by Postgres so
+  // it stays unique without application-level coordination.
+  codeNumber   Int      @unique @default(autoincrement())
   name         String
   username     String   @unique
   passwordHash String

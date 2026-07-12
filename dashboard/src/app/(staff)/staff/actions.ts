@@ -6,6 +6,7 @@ import { logActivity } from "@/lib/activityLog";
 import { requireAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/passwords";
+import { formatStaffCode } from "@/lib/staffCode";
 
 export type StaffActionResult = { ok: true } | { ok: false; message: string };
 
@@ -38,14 +39,14 @@ export async function createStaffAction(formData: FormData): Promise<StaffAction
     return { ok: false, message: "ชื่อผู้ใช้นี้ถูกใช้แล้ว" };
   }
 
-  await prisma.staffMember.create({
+  const created = await prisma.staffMember.create({
     data: { name: parsed.data.name, username, passwordHash: hashPassword(parsed.data.password) },
   });
 
   await logActivity({
     actor: session,
     action: "STAFF_CREATED",
-    detail: `${parsed.data.name} (${username})`,
+    detail: `${formatStaffCode(created.codeNumber)} ${parsed.data.name} (${username})`,
   });
 
   revalidatePath("/staff");
