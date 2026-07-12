@@ -2,6 +2,7 @@ import { FollowEvent, JoinEvent, MessageEvent, PostbackEvent, WebhookEvent } fro
 import { env } from "../config/env";
 import { replyMessage } from "../lib/line/client";
 import { logger } from "../lib/logger";
+import { matchKeywordReply } from "../config/keywordReplies";
 import { buildInsuranceTypeMenuFlex } from "../flex/insuranceTypeMenu.flex";
 import { buildLiffHandoffFlex } from "../flex/liffHandoff.flex";
 import { buildMainMenuFlex } from "../flex/mainMenu.flex";
@@ -14,7 +15,7 @@ import {
   setServiceSelected,
 } from "./conversationState.service";
 import { createInsuranceRequest } from "./insuranceRequest.service";
-import { notifyStaffNewRequest } from "./notifyStaff.service";
+import { notifyStaffKeywordEscalation, notifyStaffNewRequest } from "./notifyStaff.service";
 import { linkRichMenuToUser } from "./richMenu.service";
 
 /** Entry point for every LINE webhook event; dispatches by event type. */
@@ -62,9 +63,21 @@ async function handleFollow(event: FollowEvent): Promise<void> {
 async function handleTextMessage(event: MessageEvent): Promise<void> {
   const lineUserId = event.source.userId;
   if (!lineUserId) return;
+  if (event.message.type !== "text") return;
 
-  // Free-text input outside the guided flow just re-anchors the user on the main menu.
   await getConversationContext(lineUserId);
+
+  const matchedRule = matchKeywordReply(event.message.text);
+  if (matchedRule) {
+    await replyMessage(event.replyToken, { type: "text", text: matchedRule.reply });
+    if (matchedRule.escalateToStaff) {
+      await notifyStaffKeywordEscalation(lineUserId, event.message.text);
+    }
+    return;
+  }
+
+  // Free-text input outside the guided flow and unmatched by any keyword just re-anchors
+  // the user on the main menu.
   await replyMessage(event.replyToken, buildMainMenuFlex());
 }
 

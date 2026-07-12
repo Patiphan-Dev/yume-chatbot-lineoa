@@ -29,6 +29,8 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <Field label="จังหวัด" value={request.province ?? "-"} />
           <Field label="ยี่ห้อ/รุ่น" value={`${request.brand ?? "-"} ${request.model ?? ""}`.trim()} />
           <Field label="ปีรถ" value={request.year?.toString() ?? "-"} />
+          <Field label="เลขตัวถัง" value={request.chassisNumber ?? "-"} />
+          <Field label="เวลาที่รับข้อมูล" value={request.updatedAt.toLocaleString("th-TH")} />
         </dl>
       </section>
 

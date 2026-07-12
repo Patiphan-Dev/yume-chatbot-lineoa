@@ -17,7 +17,11 @@ const envSchema = z.object({
   // Set after running `npm run richmenu:setup` once. Optional: setDefaultRichMenu (run by that
   // script) already covers new followers; this only enables the extra explicit link-on-follow call.
   LINE_RICH_MENU_ID: z.string().min(1).optional(),
+  // Pooled (pgbouncer transaction-mode) connection used by the app at runtime.
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  // Non-pooled connection Prisma Migrate uses for schema changes — pgbouncer transaction mode
+  // can't run migrations reliably.
+  DIRECT_URL: z.string().min(1, "DIRECT_URL is required"),
   PORT: z.coerce.number().int().positive().default(3000),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });

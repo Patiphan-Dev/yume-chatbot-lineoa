@@ -4,6 +4,7 @@ export interface CarInfoFormValues {
   brand: string;
   model: string;
   year: string;
+  chassisNumber: string;
 }
 
 const ERROR_MESSAGE_TH: Record<string, string> = {

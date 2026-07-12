@@ -12,6 +12,7 @@ const EMPTY_VALUES: CarInfoFormValues = {
   brand: "",
   model: "",
   year: "",
+  chassisNumber: "",
 };
 
 export default function App() {

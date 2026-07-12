@@ -4,4 +4,5 @@ export interface CarInfoInput {
   brand: string;
   model: string;
   year: number;
+  chassisNumber: string;
 }

@@ -25,6 +25,21 @@ export async function notifyStaffNewRequest(
   }
 }
 
+export async function notifyStaffKeywordEscalation(lineUserId: string, messageText: string): Promise<void> {
+  const text = [
+    "🙋 ลูกค้าขอคุยกับเจ้าหน้าที่",
+    `LINE user: ${lineUserId}`,
+    `ข้อความ: ${messageText}`,
+  ].join("\n");
+
+  try {
+    await pushMessage(env.LINE_STAFF_GROUP_ID, { type: "text", text });
+  } catch (error) {
+    // Staff notification failing must not fail the customer-facing reply flow.
+    logger.error({ error, lineUserId }, "Failed to notify staff of keyword escalation");
+  }
+}
+
 export async function notifyStaffCarInfoSubmitted(request: InsuranceRequest): Promise<void> {
   const text = [
     "📄 ลูกค้าส่งข้อมูลรถแล้ว",
@@ -32,6 +47,7 @@ export async function notifyStaffCarInfoSubmitted(request: InsuranceRequest): Pr
     `ประเภท: ${INSURANCE_TYPE_LABEL_TH[request.insuranceType]}`,
     `ทะเบียน: ${request.carRegistration ?? "-"} (${request.province ?? "-"})`,
     `ยี่ห้อ/รุ่น: ${request.brand ?? "-"} ${request.model ?? ""} ปี ${request.year ?? "-"}`,
+    `เลขตัวถัง: ${request.chassisNumber ?? "-"}`,
   ].join("\n");
 
   try {

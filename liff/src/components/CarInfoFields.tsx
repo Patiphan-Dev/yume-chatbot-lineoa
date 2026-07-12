@@ -71,6 +71,17 @@ export function CarInfoFields({ values, onChange }: CarInfoFieldsProps) {
           required
         />
       </label>
+
+      <label className="field">
+        <span>เลขตัวถัง</span>
+        <input
+          type="text"
+          value={values.chassisNumber}
+          onChange={(event) => onChange("chassisNumber", event.target.value)}
+          placeholder="MRO53XXXXXXXXXXX"
+          required
+        />
+      </label>
     </div>
   );
 }

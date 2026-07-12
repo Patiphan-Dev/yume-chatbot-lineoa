@@ -8,6 +8,6 @@ export const INSURANCE_TYPE_LABEL_TH: Record<InsuranceType, string> = {
   LUXURY_SUPERCAR: "ประกันรถหรู/Supercar",
   EV: "ประกันรถไฟฟ้า EV",
   FIRE: "ประกันอัคคีภัย",
-  CONSTRUCTION: "ประกันท่อสร้าง",
+  CONSTRUCTION: "ประกันก่อสร้าง",
   OTHER: "ประกันภัยอื่นๆ",
 };

@@ -11,6 +11,7 @@ const submitBodySchema = z.object({
   brand: z.string().min(1),
   model: z.string().min(1),
   year: z.coerce.number().int().gte(1990).lte(CURRENT_YEAR + 1),
+  chassisNumber: z.string().min(1),
 });
 
 const STATUS_BY_REJECTION_REASON = {
