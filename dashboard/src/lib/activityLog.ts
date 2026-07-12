@@ -10,6 +10,7 @@ export const ACTIVITY_ACTIONS = {
   STAFF_SUSPENDED: "ระงับสมาชิกทีมงาน",
   STAFF_REACTIVATED: "เปิดใช้งานสมาชิกทีมงาน",
   STAFF_PASSWORD_RESET: "เปลี่ยนรหัสผ่านสมาชิก",
+  COMPANY_INFO_UPDATED: "แก้ไขข้อมูลบริษัท",
 } as const;
 
 export type ActivityAction = keyof typeof ACTIVITY_ACTIONS;

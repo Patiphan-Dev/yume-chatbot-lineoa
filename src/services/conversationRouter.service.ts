@@ -71,7 +71,7 @@ async function handleTextMessage(event: MessageEvent): Promise<void> {
 
   const matchedRule = matchKeywordReply(event.message.text);
   if (matchedRule) {
-    await replyMessage(event.replyToken, { type: "text", text: matchedRule.reply });
+    await replyMessage(event.replyToken, { type: "text", text: await matchedRule.buildReply() });
     if (matchedRule.escalateToStaff) {
       await notifyStaffKeywordEscalation(lineUserId, event.message.text);
     }
@@ -102,7 +102,7 @@ async function handlePostback(event: PostbackEvent): Promise<void> {
     return handleServiceSelected(event.replyToken, lineUserId, parsed.value as Service);
   }
   if (parsed.action === "show_info") {
-    await replyMessage(event.replyToken, buildInfoReply(parsed.value));
+    await replyMessage(event.replyToken, await buildInfoReply(parsed.value));
     return;
   }
   return handleInsuranceTypeSelected(event.replyToken, lineUserId, parsed.value as InsuranceType);

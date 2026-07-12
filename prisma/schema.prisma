@@ -90,6 +90,16 @@ model StaffMember {
   @@map("staff_members")
 }
 
+// Editable company knowledge the bot answers from, managed on the dashboard's
+// /company page. Keyed JSON blobs: "profile" and "insurance_info".
+model CompanySetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("company_settings")
+}
+
 // LINE retries webhook deliveries on timeout; recording each webhookEventId
 // lets the controller skip events it has already processed.
 model ProcessedWebhookEvent {

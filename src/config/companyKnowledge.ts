@@ -1,11 +1,32 @@
 import { InsuranceType } from "../types/conversation";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ⚠️ ข้อมูลตัวอย่าง (mock) — แก้ทุกค่าในไฟล์นี้ให้เป็นข้อมูลจริงก่อนเปิดใช้กับลูกค้า
-// ไฟล์นี้คือ single source of truth ของข้อมูลบริษัทที่บอทใช้ตอบลูกค้า
+// ค่าเริ่มต้น (mock) ของฐานความรู้บริษัท — ข้อมูลจริงแก้ได้จากหน้า "ข้อมูลบริษัท"
+// ใน dashboard ซึ่งเก็บลงตาราง company_settings; ไฟล์นี้เป็นเพียง fallback
+// เมื่อยังไม่เคยบันทึกข้อมูลจากหน้า dashboard เลย
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const COMPANY_PROFILE = {
+export interface CompanyProfile {
+  name: string;
+  description: string;
+  license: string;
+  address: string;
+  serviceArea: string;
+  phone: string;
+  mobile: string;
+  lineOa: string;
+  facebook: string;
+  businessHours: string;
+  highlights: string[];
+}
+
+export interface InsuranceInfo {
+  summary: string;
+  coverage: string[];
+  suitableFor: string;
+}
+
+export const DEFAULT_COMPANY_PROFILE: CompanyProfile = {
   name: "YUME Insurance (ยูเมะ อินชัวรันส์)",
   description: "นายหน้าประกันวินาศภัยครบวงจร ดูแลตั้งแต่เช็คเบี้ย เปรียบเทียบแผน จนถึงเคลม",
   license: "ใบอนุญาตนายหน้าประกันวินาศภัย เลขที่ ว00000/2568",
@@ -22,15 +43,9 @@ export const COMPANY_PROFILE = {
     "มีเจ้าหน้าที่ช่วยประสานงานเคลมตลอดอายุกรมธรรม์",
     "แจ้งงานผ่าน LINE ได้ตลอด ไม่ต้องเดินทาง",
   ],
-} as const;
+};
 
-export interface InsuranceInfo {
-  summary: string;
-  coverage: string[];
-  suitableFor: string;
-}
-
-export const INSURANCE_INFO: Record<InsuranceType, InsuranceInfo> = {
+export const DEFAULT_INSURANCE_INFO: Record<InsuranceType, InsuranceInfo> = {
   CAR_CLASS_1: {
     summary: "คุ้มครองครอบคลุมที่สุด ทั้งรถเราและคู่กรณี ไม่ว่าใครผิด",
     coverage: [
@@ -105,27 +120,27 @@ export const INSURANCE_INFO: Record<InsuranceType, InsuranceInfo> = {
   },
 };
 
-export function buildCompanyProfileText(): string {
+export function buildCompanyProfileText(profile: CompanyProfile): string {
   return [
-    `🏢 ${COMPANY_PROFILE.name}`,
-    COMPANY_PROFILE.description,
-    COMPANY_PROFILE.license,
+    `🏢 ${profile.name}`,
+    profile.description,
+    profile.license,
     "",
-    `📍 ${COMPANY_PROFILE.address}`,
-    `🗺️ ${COMPANY_PROFILE.serviceArea}`,
+    `📍 ${profile.address}`,
+    `🗺️ ${profile.serviceArea}`,
   ].join("\n");
 }
 
-export function buildContactText(): string {
+export function buildContactText(profile: CompanyProfile): string {
   return [
-    "ช่องทางติดต่อ YUME Insurance",
-    `📞 โทร: ${COMPANY_PROFILE.phone} / ${COMPANY_PROFILE.mobile}`,
-    `💬 LINE: ${COMPANY_PROFILE.lineOa}`,
-    `📘 Facebook: ${COMPANY_PROFILE.facebook}`,
-    `🕘 เวลาทำการ: ${COMPANY_PROFILE.businessHours}`,
+    `ช่องทางติดต่อ ${profile.name}`,
+    `📞 โทร: ${profile.phone} / ${profile.mobile}`,
+    `💬 LINE: ${profile.lineOa}`,
+    `📘 Facebook: ${profile.facebook}`,
+    `🕘 เวลาทำการ: ${profile.businessHours}`,
   ].join("\n");
 }
 
-export function buildHighlightsText(): string {
-  return ["ทำไมต้องเช็คเบี้ยกับ YUME ✨", ...COMPANY_PROFILE.highlights.map((h) => `• ${h}`)].join("\n");
+export function buildHighlightsText(profile: CompanyProfile): string {
+  return ["ทำไมต้องเช็คเบี้ยกับเรา ✨", ...profile.highlights.map((h) => `• ${h}`)].join("\n");
 }
