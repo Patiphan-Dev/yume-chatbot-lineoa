@@ -4,6 +4,10 @@ import { env } from "../config/env";
 import { logger } from "../lib/logger";
 import { INSURANCE_TYPE_LABEL_TH, InsuranceType } from "../types/conversation";
 
+function requestDetailUrl(requestId: string): string {
+  return `${env.DASHBOARD_URL}/requests/${requestId}`;
+}
+
 export async function notifyStaffNewRequest(
   requestId: string,
   lineUserId: string,
@@ -15,6 +19,7 @@ export async function notifyStaffNewRequest(
     `ลูกค้า: ${displayName ?? lineUserId}`,
     `ประเภท: ${INSURANCE_TYPE_LABEL_TH[insuranceType]}`,
     `เลขที่คำขอ: ${requestId}`,
+    `ตรวจสอบ: ${requestDetailUrl(requestId)}`,
   ].join("\n");
 
   try {
@@ -48,6 +53,7 @@ export async function notifyStaffCarInfoSubmitted(request: InsuranceRequest): Pr
     `ทะเบียน: ${request.carRegistration ?? "-"} (${request.province ?? "-"})`,
     `ยี่ห้อ/รุ่น: ${request.brand ?? "-"} ${request.model ?? ""} ปี ${request.year ?? "-"}`,
     `เลขตัวถัง: ${request.chassisNumber ?? "-"}`,
+    `ตรวจสอบ: ${requestDetailUrl(request.id)}`,
   ].join("\n");
 
   try {

@@ -8,6 +8,9 @@ const envSchema = z.object({
   LINE_CHANNEL_SECRET: z.string().min(1, "LINE_CHANNEL_SECRET is required"),
   LINE_STAFF_GROUP_ID: z.string().min(1, "LINE_STAFF_GROUP_ID is required"),
   LIFF_APP_URL: z.string().url(),
+  // Staff dashboard base URL — linked from staff group notifications so staff can
+  // jump straight to the request detail page.
+  DASHBOARD_URL: z.string().url(),
   // Origin the LIFF form is served from (e.g. https://your-liff-app.vercel.app) — CORS-allowed
   // for /api/liff since the form runs on its own domain, separate from this backend.
   LIFF_APP_ORIGIN: z.string().url(),
