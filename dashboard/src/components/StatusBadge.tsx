@@ -5,13 +5,15 @@ const STATUS_STYLES: Record<RequestStatus, string> = {
   IN_REVIEW: "bg-blue-100 text-blue-800",
   QUOTED: "bg-emerald-100 text-emerald-800",
   CLOSED: "bg-neutral-200 text-neutral-600",
+  CANCELLED: "bg-red-100 text-red-700",
 };
 
-const STATUS_LABEL_TH: Record<RequestStatus, string> = {
+export const STATUS_LABEL_TH: Record<RequestStatus, string> = {
   PENDING: "รอดำเนินการ",
   IN_REVIEW: "กำลังตรวจสอบ",
   QUOTED: "เสนอราคาแล้ว",
   CLOSED: "ปิดงาน",
+  CANCELLED: "ยกเลิก",
 };
 
 export function StatusBadge({ status }: { status: RequestStatus }) {

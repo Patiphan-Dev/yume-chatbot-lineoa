@@ -131,4 +131,5 @@ enum RequestStatus {
   IN_REVIEW
   QUOTED
   CLOSED
+  CANCELLED
 }

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusSelect } from "@/components/StatusSelect";
 import { prisma } from "@/lib/db";
 import { INSURANCE_TYPE_LABEL_TH } from "@/lib/insuranceType";
 import { QuoteForm } from "./QuoteForm";
@@ -20,7 +20,7 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-neutral-900">คำขอ #{request.id}</h1>
-        <StatusBadge status={request.status} />
+        <StatusSelect requestId={request.id} status={request.status} />
       </div>
 
       <section className="rounded-lg border border-neutral-200 bg-white p-5">

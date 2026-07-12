@@ -4,6 +4,7 @@ import { SessionPayload } from "./session";
 export const ACTIVITY_ACTIONS = {
   LOGIN: "เข้าสู่ระบบ",
   QUOTE_SENT: "ส่งใบเสนอราคาให้ลูกค้า",
+  STATUS_CHANGED: "เปลี่ยนสถานะคำขอ",
   STAFF_CREATED: "เพิ่มสมาชิกทีมงาน",
   STAFF_SUSPENDED: "ระงับสมาชิกทีมงาน",
   STAFF_REACTIVATED: "เปิดใช้งานสมาชิกทีมงาน",

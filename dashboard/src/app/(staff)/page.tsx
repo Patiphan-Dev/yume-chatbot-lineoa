@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { RequestStatus } from "@prisma/client";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusSelect } from "@/components/StatusSelect";
 import { prisma } from "@/lib/db";
 import { INSURANCE_TYPE_LABEL_TH } from "@/lib/insuranceType";
 
@@ -10,6 +10,7 @@ const STATUS_TABS: { value: RequestStatus | "ALL"; label: string }[] = [
   { value: "IN_REVIEW", label: "กำลังตรวจสอบ" },
   { value: "QUOTED", label: "เสนอราคาแล้ว" },
   { value: "CLOSED", label: "ปิดงาน" },
+  { value: "CANCELLED", label: "ยกเลิก" },
 ];
 
 function firstValue(value: string | string[] | undefined): string | undefined {
@@ -113,7 +114,7 @@ export default async function RequestsPage({
                 <td className="px-4 py-3 text-neutral-600">{INSURANCE_TYPE_LABEL_TH[request.insuranceType]}</td>
                 <td className="px-4 py-3 text-neutral-600">{request.carRegistration ?? "-"}</td>
                 <td className="px-4 py-3">
-                  <StatusBadge status={request.status} />
+                  <StatusSelect requestId={request.id} status={request.status} />
                 </td>
                 <td className="px-4 py-3 text-neutral-500">
                   {request.createdAt.toLocaleDateString("th-TH", { day: "2-digit", month: "short", year: "numeric" })}
