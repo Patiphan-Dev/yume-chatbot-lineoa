@@ -3,7 +3,9 @@ import { env } from "../config/env";
 import { replyMessage } from "../lib/line/client";
 import { logger } from "../lib/logger";
 import { matchKeywordReply } from "../config/keywordReplies";
+import { buildInfoMenuFlex } from "../flex/infoMenu.flex";
 import { buildInsuranceTypeMenuFlex } from "../flex/insuranceTypeMenu.flex";
+import { buildInfoReply } from "./infoReply.service";
 import { buildLiffHandoffFlex } from "../flex/liffHandoff.flex";
 import { buildMainMenuFlex } from "../flex/mainMenu.flex";
 import { InsuranceType, Service } from "../types/conversation";
@@ -99,6 +101,10 @@ async function handlePostback(event: PostbackEvent): Promise<void> {
   if (parsed.action === "select_service") {
     return handleServiceSelected(event.replyToken, lineUserId, parsed.value as Service);
   }
+  if (parsed.action === "show_info") {
+    await replyMessage(event.replyToken, buildInfoReply(parsed.value));
+    return;
+  }
   return handleInsuranceTypeSelected(event.replyToken, lineUserId, parsed.value as InsuranceType);
 }
 
@@ -110,11 +116,19 @@ async function handleServiceSelected(replyToken: string, lineUserId: string, ser
     return;
   }
 
-  // INQUIRY / OTHER hand off straight to a human; no structured request to create.
+  if (service === "INQUIRY") {
+    // Self-service knowledge menu; no staff involvement needed.
+    await replyMessage(replyToken, buildInfoMenuFlex());
+    await resetToMainMenu(lineUserId);
+    return;
+  }
+
+  // OTHER hands off to a human — tell the customer AND actually alert staff.
   await replyMessage(replyToken, {
     type: "text",
     text: "รับเรื่องแล้วครับ เจ้าหน้าที่จะติดต่อกลับโดยเร็วที่สุด",
   });
+  await notifyStaffKeywordEscalation(lineUserId, "ลูกค้ากดเมนู “บริการอื่นๆ” ขอให้เจ้าหน้าที่ติดต่อกลับ");
   await resetToMainMenu(lineUserId);
 }
 

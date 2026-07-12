@@ -1,4 +1,4 @@
-export type PostbackAction = "select_service" | "select_insurance_type";
+export type PostbackAction = "select_service" | "select_insurance_type" | "show_info";
 
 export interface ParsedPostback {
   action: PostbackAction;
@@ -11,7 +11,7 @@ export function parsePostbackData(data: string): ParsedPostback | null {
   const action = params.get("action");
   const value = params.get("value");
 
-  if (action !== "select_service" && action !== "select_insurance_type") {
+  if (action !== "select_service" && action !== "select_insurance_type" && action !== "show_info") {
     return null;
   }
   if (!value) return null;

@@ -1,3 +1,5 @@
+import { buildCompanyProfileText, buildContactText, buildHighlightsText } from "./companyKnowledge";
+
 export interface KeywordReplyRule {
   id: string;
   keywords: string[];
@@ -21,6 +23,21 @@ export const KEYWORD_REPLY_RULES: KeywordReplyRule[] = [
     id: "pricing_question",
     keywords: ["เบี้ยเท่าไหร่", "ราคาเท่าไหร่", "ราคาประกัน", "เช็คราคา", "เช็คเบี้ย"],
     reply: "การเช็คเบี้ยประกันต้องขอข้อมูลรถของลูกค้าก่อนครับ กดปุ่มด้านล่างเพื่อเริ่มเช็คเบี้ยได้เลยครับ",
+  },
+  {
+    id: "contact_info",
+    keywords: ["เบอร์โทร", "ติดต่อ", "เวลาทำการ", "เปิดกี่โมง", "ปิดกี่โมง", "เวลาเปิด"],
+    reply: buildContactText(),
+  },
+  {
+    id: "company_info",
+    keywords: ["ที่อยู่", "บริษัทอยู่ไหน", "อยู่ที่ไหน", "บริษัทอะไร", "ใบอนุญาต"],
+    reply: buildCompanyProfileText(),
+  },
+  {
+    id: "why_us",
+    keywords: ["ทำไมต้อง", "ดียังไง", "จุดเด่น", "น่าเชื่อถือ"],
+    reply: buildHighlightsText(),
   },
   {
     id: "human_handoff",
