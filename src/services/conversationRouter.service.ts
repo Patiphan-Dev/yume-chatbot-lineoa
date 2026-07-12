@@ -85,6 +85,11 @@ async function handlePostback(event: PostbackEvent): Promise<void> {
   const lineUserId = event.source.userId;
   if (!lineUserId) return;
 
+  // Ensures the LineUser + ConversationState rows exist even if the follow
+  // event never fired for this user (e.g. they friended the bot before this
+  // logic existed), otherwise the upserts below hit a foreign key violation.
+  await getConversationContext(lineUserId);
+
   const parsed = parsePostbackData(event.postback.data);
   if (!parsed) {
     await replyMessage(event.replyToken, buildMainMenuFlex());
