@@ -99,6 +99,7 @@ export default async function RequestsPage({
               <th className="px-4 py-3">ทะเบียนรถ</th>
               <th className="px-4 py-3">สถานะ</th>
               <th className="px-4 py-3">วันที่แจ้ง</th>
+              <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -117,11 +118,19 @@ export default async function RequestsPage({
                 <td className="px-4 py-3 text-neutral-500">
                   {request.createdAt.toLocaleDateString("th-TH", { day: "2-digit", month: "short", year: "numeric" })}
                 </td>
+                <td className="px-4 py-3 text-right">
+                  <Link
+                    href={`/requests/${request.id}`}
+                    className="inline-block rounded-md bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800"
+                  >
+                    เปิดดู / เสนอราคา
+                  </Link>
+                </td>
               </tr>
             ))}
             {requests.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-neutral-400">
+                <td colSpan={6} className="px-4 py-8 text-center text-neutral-400">
                   ไม่พบคำขอที่ตรงกับเงื่อนไข
                 </td>
               </tr>
