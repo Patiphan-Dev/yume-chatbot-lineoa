@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { submitQuoteAction } from "./actions";
 
 interface QuoteFormProps {
@@ -15,7 +15,13 @@ export function QuoteForm({ requestId, existingPremium, existingNote }: QuoteFor
   const [success, setSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  async function handleSubmit(formData: FormData) {
+  // onSubmit + preventDefault instead of form action={fn}: passing a client
+  // function as a form action requires React 19, and this app runs React 18 —
+  // there the action is silently ignored and the button does nothing.
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
     setPending(true);
     setError(null);
     setSuccess(false);
@@ -32,7 +38,7 @@ export function QuoteForm({ requestId, existingPremium, existingNote }: QuoteFor
   }
 
   return (
-    <form action={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <div>
         <label className="mb-1 block text-sm font-medium text-neutral-700" htmlFor="premium">
           เบี้ยประกัน (บาท)

@@ -1,7 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { createStaffAction, resetStaffPasswordAction, setStaffActiveAction } from "./actions";
+
+// Forms here use onSubmit + preventDefault instead of form action={fn}: client
+// function actions require React 19, and this app runs React 18 — there the
+// action is silently ignored and submit buttons do nothing.
 
 export interface StaffRow {
   id: string;
@@ -16,7 +20,10 @@ export function AddStaffForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  async function handleSubmit(formData: FormData) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
     setError(null);
     setSuccess(false);
     const result = await createStaffAction(formData);
@@ -29,7 +36,7 @@ export function AddStaffForm() {
   }
 
   return (
-    <form ref={formRef} action={handleSubmit} className="flex flex-wrap items-end gap-3">
+    <form ref={formRef} onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3">
       <FieldInput label="ชื่อ-นามสกุล" name="name" type="text" placeholder="สมชาย ใจดี" />
       <FieldInput label="ชื่อผู้ใช้" name="username" type="text" placeholder="somchai" />
       <FieldInput label="รหัสผ่าน (อย่างน้อย 8 ตัว)" name="password" type="password" placeholder="••••••••" />
@@ -73,7 +80,10 @@ export function StaffRowActions({ staff }: { staff: StaffRow }) {
     if (!result.ok) setError(result.message);
   }
 
-  async function handleResetPassword(formData: FormData) {
+  async function handleResetPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
     setError(null);
     const result = await resetStaffPasswordAction(staff.id, formData);
     if (!result.ok) {
@@ -107,7 +117,7 @@ export function StaffRowActions({ staff }: { staff: StaffRow }) {
       </div>
 
       {showReset && (
-        <form action={handleResetPassword} className="flex gap-2">
+        <form onSubmit={handleResetPassword} className="flex gap-2">
           <input
             name="password"
             type="password"
