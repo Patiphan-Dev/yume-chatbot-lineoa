@@ -70,6 +70,19 @@ model QuoteAttachment {
   @@map("quote_attachments")
 }
 
+// Dashboard staff accounts, managed from the /staff admin page. The master
+// admin (username "admin" + STAFF_DASHBOARD_PASSWORD) lives in env, not here.
+model StaffMember {
+  id           String   @id @default(cuid())
+  name         String
+  username     String   @unique
+  passwordHash String
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@map("staff_members")
+}
+
 enum ConversationStep {
   MAIN_MENU
   AWAITING_INSURANCE_TYPE

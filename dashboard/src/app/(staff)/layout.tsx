@@ -4,7 +4,7 @@ import { requireStaffSession } from "@/lib/auth";
 import { logoutAction } from "./actions";
 
 export default async function StaffLayout({ children }: { children: ReactNode }) {
-  await requireStaffSession();
+  const session = await requireStaffSession();
 
   return (
     <div className="flex min-h-screen">
@@ -18,10 +18,13 @@ export default async function StaffLayout({ children }: { children: ReactNode })
         </div>
 
         <div className="flex-1 overflow-y-auto p-3">
-          <SidebarNav />
+          <SidebarNav isAdmin={session.role === "admin"} />
         </div>
 
         <div className="border-t border-neutral-200 p-3">
+          <div className="px-3 pb-2 text-xs text-neutral-400">
+            เข้าสู่ระบบเป็น <span className="font-medium text-neutral-600">{session.name}</span>
+          </div>
           <form action={logoutAction}>
             <button
               className="w-full rounded-lg px-3 py-2 text-left text-sm text-neutral-500 hover:bg-neutral-100 hover:text-neutral-800"

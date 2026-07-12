@@ -1,29 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { usePathname } from "next/navigation";
 
-const NAV_ITEMS: { href: string; status: string; label: string; icon: string }[] = [
-  { href: "/?status=ALL", status: "ALL", label: "คำขอทั้งหมด", icon: "📋" },
-  { href: "/?status=PENDING", status: "PENDING", label: "รอดำเนินการ", icon: "🕐" },
-  { href: "/?status=IN_REVIEW", status: "IN_REVIEW", label: "กำลังตรวจสอบ", icon: "🔍" },
-  { href: "/?status=QUOTED", status: "QUOTED", label: "เสนอราคาแล้ว", icon: "💰" },
-  { href: "/?status=CLOSED", status: "CLOSED", label: "ปิดงาน", icon: "✅" },
-];
+interface SidebarNavProps {
+  isAdmin: boolean;
+}
 
-function SidebarNavInner() {
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+  isActive: (pathname: string) => boolean;
+}
+
+const REQUEST_ITEM: NavItem = {
+  href: "/",
+  label: "คำขอเช็คเบี้ย",
+  icon: "📋",
+  isActive: (pathname) => pathname === "/" || pathname.startsWith("/requests"),
+};
+
+const STAFF_ITEM: NavItem = {
+  href: "/staff",
+  label: "จัดการทีมงาน",
+  icon: "👥",
+  isActive: (pathname) => pathname.startsWith("/staff"),
+};
+
+export function SidebarNav({ isAdmin }: SidebarNavProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const activeStatus = pathname === "/" ? (searchParams.get("status") ?? "ALL") : null;
+  const items = isAdmin ? [REQUEST_ITEM, STAFF_ITEM] : [REQUEST_ITEM];
 
   return (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map((item) => {
-        const active = activeStatus === item.status;
+      {items.map((item) => {
+        const active = item.isActive(pathname);
         return (
           <Link
-            key={item.status}
+            key={item.href}
             href={item.href}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
               active
@@ -37,14 +52,5 @@ function SidebarNavInner() {
         );
       })}
     </nav>
-  );
-}
-
-export function SidebarNav() {
-  // useSearchParams requires a Suspense boundary during prerendering.
-  return (
-    <Suspense fallback={null}>
-      <SidebarNavInner />
-    </Suspense>
   );
 }

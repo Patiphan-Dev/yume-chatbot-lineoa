@@ -18,6 +18,19 @@ export default async function LoginPage({
         <h1 className="mb-1 text-lg font-bold text-neutral-900">YUME Insurance</h1>
         <p className="mb-6 text-sm text-neutral-500">เข้าสู่ระบบสำหรับเจ้าหน้าที่</p>
 
+        <label className="mb-1 block text-sm font-medium text-neutral-700" htmlFor="username">
+          ชื่อผู้ใช้
+        </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          required
+          autoFocus
+          autoComplete="username"
+          className="mb-4 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-amber-700 focus:outline-none"
+        />
+
         <label className="mb-1 block text-sm font-medium text-neutral-700" htmlFor="password">
           รหัสผ่าน
         </label>
@@ -26,11 +39,13 @@ export default async function LoginPage({
           name="password"
           type="password"
           required
-          autoFocus
+          autoComplete="current-password"
           className="mb-4 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-amber-700 focus:outline-none"
         />
 
-        {hasError && <p className="mb-4 text-sm text-red-600">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>}
+        {hasError && (
+          <p className="mb-4 text-sm text-red-600">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
+        )}
 
         <button
           type="submit"
