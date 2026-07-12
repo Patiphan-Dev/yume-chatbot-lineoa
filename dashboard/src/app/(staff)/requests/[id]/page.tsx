@@ -34,6 +34,12 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <Field label="ปีรถ" value={request.year?.toString() ?? "-"} />
           <Field label="เลขตัวถัง" value={request.chassisNumber ?? "-"} />
           <Field label="เวลาที่รับข้อมูล" value={request.updatedAt.toLocaleString("th-TH")} />
+          {request.quotedBy && (
+            <Field
+              label="เสนอราคาโดย"
+              value={`${request.quotedBy}${request.quotedAt ? ` · ${request.quotedAt.toLocaleString("th-TH")}` : ""}`}
+            />
+          )}
         </dl>
       </section>
 

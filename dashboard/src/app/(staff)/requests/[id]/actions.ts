@@ -3,7 +3,9 @@
 import { Message } from "@line/bot-sdk";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { logActivity } from "@/lib/activityLog";
 import { buildAttachmentMessages, saveAttachments, validateAttachments } from "@/lib/attachments";
+import { requireStaffSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { INSURANCE_TYPE_LABEL_TH } from "@/lib/insuranceType";
 import { pushLineMessage } from "@/lib/line";
@@ -23,6 +25,8 @@ function extractFiles(formData: FormData): File[] {
 }
 
 export async function submitQuoteAction(requestId: string, formData: FormData): Promise<SubmitQuoteResult> {
+  const session = await requireStaffSession();
+
   const parsed = quoteSchema.safeParse({
     premium: formData.get("premium"),
     note: formData.get("note") || undefined,
@@ -52,6 +56,7 @@ export async function submitQuoteAction(requestId: string, formData: FormData): 
       quotedPremium: parsed.data.premium,
       quoteNote: parsed.data.note ?? null,
       quotedAt: new Date(),
+      quotedBy: session.name,
     },
   });
 
@@ -70,6 +75,13 @@ export async function submitQuoteAction(requestId: string, formData: FormData): 
     console.error("Failed to push quote result to customer", error);
     return { ok: false, message: "บันทึกราคาสำเร็จ แต่ส่งข้อความหาลูกค้าไม่สำเร็จ กรุณาลองส่งอีกครั้ง" };
   }
+
+  await logActivity({
+    actor: session,
+    action: "QUOTE_SENT",
+    requestId,
+    detail: `เบี้ย ${parsed.data.premium.toLocaleString("th-TH")} บาท${files.length > 0 ? ` พร้อมเอกสาร ${files.length} ไฟล์` : ""}`,
+  });
 
   revalidatePath(`/requests/${requestId}`);
   revalidatePath("/");

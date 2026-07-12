@@ -47,6 +47,10 @@ model InsuranceRequest {
   quotedPremium   Int?
   quoteNote       String?
   quotedAt        DateTime?
+  // Display name of the staff member who sent the quote — a snapshot string,
+  // not a FK, so history survives account renames/removal (and covers the
+  // env-based master admin who has no StaffMember row).
+  quotedBy        String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   user            LineUser      @relation(fields: [lineUserId], references: [lineUserId])
@@ -81,6 +85,20 @@ model StaffMember {
   createdAt    DateTime @default(now())
 
   @@map("staff_members")
+}
+
+// Append-only audit trail of staff actions (logins, quotes, member management).
+model ActivityLog {
+  id        String   @id @default(cuid())
+  actorName String
+  actorRole String
+  action    String
+  requestId String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("activity_logs")
 }
 
 enum ConversationStep {

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { logActivity } from "@/lib/activityLog";
 import { requireAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/passwords";
@@ -20,7 +21,7 @@ const createStaffSchema = z.object({
 });
 
 export async function createStaffAction(formData: FormData): Promise<StaffActionResult> {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const parsed = createStaffSchema.safeParse({
     name: formData.get("name"),
@@ -41,14 +42,26 @@ export async function createStaffAction(formData: FormData): Promise<StaffAction
     data: { name: parsed.data.name, username, passwordHash: hashPassword(parsed.data.password) },
   });
 
+  await logActivity({
+    actor: session,
+    action: "STAFF_CREATED",
+    detail: `${parsed.data.name} (${username})`,
+  });
+
   revalidatePath("/staff");
   return { ok: true };
 }
 
 export async function setStaffActiveAction(staffId: string, active: boolean): Promise<StaffActionResult> {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
-  await prisma.staffMember.update({ where: { id: staffId }, data: { active } });
+  const staff = await prisma.staffMember.update({ where: { id: staffId }, data: { active } });
+
+  await logActivity({
+    actor: session,
+    action: active ? "STAFF_REACTIVATED" : "STAFF_SUSPENDED",
+    detail: `${staff.name} (${staff.username})`,
+  });
 
   revalidatePath("/staff");
   return { ok: true };
@@ -57,16 +70,22 @@ export async function setStaffActiveAction(staffId: string, active: boolean): Pr
 const resetPasswordSchema = z.string().min(8, "รหัสผ่านต้องยาวอย่างน้อย 8 ตัวอักษร");
 
 export async function resetStaffPasswordAction(staffId: string, formData: FormData): Promise<StaffActionResult> {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   const parsed = resetPasswordSchema.safeParse(formData.get("password"));
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0]?.message ?? "รหัสผ่านไม่ถูกต้อง" };
   }
 
-  await prisma.staffMember.update({
+  const staff = await prisma.staffMember.update({
     where: { id: staffId },
     data: { passwordHash: hashPassword(parsed.data) },
+  });
+
+  await logActivity({
+    actor: session,
+    action: "STAFF_PASSWORD_RESET",
+    detail: `${staff.name} (${staff.username})`,
   });
 
   revalidatePath("/staff");

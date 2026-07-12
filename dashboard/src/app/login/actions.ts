@@ -3,6 +3,7 @@
 import { timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { logActivity } from "@/lib/activityLog";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { verifyPassword } from "@/lib/passwords";
@@ -36,6 +37,8 @@ export async function loginAction(formData: FormData): Promise<void> {
   if (!identity) {
     redirect("/login?error=1");
   }
+
+  await logActivity({ actor: identity, action: "LOGIN", detail: `username: ${username}` });
 
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, createSessionToken(env.SESSION_SECRET, identity.role, identity.name), {
