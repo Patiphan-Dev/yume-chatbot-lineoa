@@ -20,29 +20,36 @@ export async function getConversationContext(lineUserId: string): Promise<Conver
 }
 
 export async function setServiceSelected(lineUserId: string, service: Service): Promise<void> {
-  await prisma.conversationState.update({
+  const data = { step: "AWAITING_INSURANCE_TYPE" as const, selectedService: service };
+  await prisma.conversationState.upsert({
     where: { lineUserId },
-    data: { step: "AWAITING_INSURANCE_TYPE", selectedService: service },
+    update: data,
+    create: { lineUserId, ...data },
   });
 }
 
 export async function setInsuranceTypeSelected(lineUserId: string, insuranceType: InsuranceType): Promise<void> {
-  await prisma.conversationState.update({
+  const data = { step: "AWAITING_CAR_INFO" as const, selectedInsuranceType: insuranceType };
+  await prisma.conversationState.upsert({
     where: { lineUserId },
-    data: { step: "AWAITING_CAR_INFO", selectedInsuranceType: insuranceType },
+    update: data,
+    create: { lineUserId, ...data },
   });
 }
 
 export async function resetToMainMenu(lineUserId: string): Promise<void> {
-  await prisma.conversationState.update({
+  const data = { step: "MAIN_MENU" as const, selectedService: null, selectedInsuranceType: null };
+  await prisma.conversationState.upsert({
     where: { lineUserId },
-    data: { step: "MAIN_MENU", selectedService: null, selectedInsuranceType: null },
+    update: data,
+    create: { lineUserId, ...data },
   });
 }
 
 export async function markSubmitted(lineUserId: string): Promise<void> {
-  await prisma.conversationState.update({
+  await prisma.conversationState.upsert({
     where: { lineUserId },
-    data: { step: "SUBMITTED" },
+    update: { step: "SUBMITTED" },
+    create: { lineUserId, step: "SUBMITTED" },
   });
 }
