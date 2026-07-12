@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { submitQuoteAction } from "./actions";
 
 interface QuoteFormProps {
@@ -13,6 +13,7 @@ export function QuoteForm({ requestId, existingPremium, existingNote }: QuoteFor
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(formData: FormData) {
     setPending(true);
@@ -27,6 +28,7 @@ export function QuoteForm({ requestId, existingPremium, existingNote }: QuoteFor
       return;
     }
     setSuccess(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   return (
@@ -58,6 +60,24 @@ export function QuoteForm({ requestId, existingPremium, existingNote }: QuoteFor
           defaultValue={existingNote ?? ""}
           className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-amber-700 focus:outline-none"
         />
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-neutral-700" htmlFor="attachments">
+          เอกสารแนบ (ถ้ามี) — รูป JPG/PNG หรือ PDF สูงสุด 4 ไฟล์ ไฟล์ละไม่เกิน 5MB
+        </label>
+        <input
+          ref={fileInputRef}
+          id="attachments"
+          name="attachments"
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,application/pdf"
+          className="block w-full text-sm text-neutral-600 file:mr-3 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-amber-800 hover:file:bg-amber-100"
+        />
+        <p className="mt-1 text-xs text-neutral-400">
+          รูปจะแสดงในแชทลูกค้าโดยตรง ส่วน PDF จะส่งเป็นลิงก์ให้กดเปิด
+        </p>
       </div>
 
       {error && <p className="text-sm text-red-600">{error}</p>}

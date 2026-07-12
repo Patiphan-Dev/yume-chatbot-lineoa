@@ -50,8 +50,24 @@ model InsuranceRequest {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   user            LineUser      @relation(fields: [lineUserId], references: [lineUserId])
+  attachments     QuoteAttachment[]
 
   @@map("insurance_requests")
+}
+
+// Documents staff attach when quoting (policy summary, coverage table, ...).
+// Stored in Postgres and served via the dashboard's public /files/<id> route so
+// LINE can fetch images; ids are cuids, unguessable by construction.
+model QuoteAttachment {
+  id          String           @id @default(cuid())
+  requestId   String
+  filename    String
+  contentType String
+  data        Bytes
+  createdAt   DateTime         @default(now())
+  request     InsuranceRequest @relation(fields: [requestId], references: [id])
+
+  @@map("quote_attachments")
 }
 
 enum ConversationStep {

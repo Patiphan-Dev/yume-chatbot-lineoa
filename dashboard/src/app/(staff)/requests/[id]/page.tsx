@@ -8,7 +8,10 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const request = await prisma.insuranceRequest.findUnique({
     where: { id },
-    include: { user: true },
+    include: {
+      user: true,
+      attachments: { select: { id: true, filename: true, contentType: true, createdAt: true } },
+    },
   });
 
   if (!request) notFound();
@@ -33,6 +36,31 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
           <Field label="เวลาที่รับข้อมูล" value={request.updatedAt.toLocaleString("th-TH")} />
         </dl>
       </section>
+
+      {request.attachments.length > 0 && (
+        <section className="rounded-lg border border-neutral-200 bg-white p-5">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+            เอกสารที่เคยส่งให้ลูกค้า
+          </h2>
+          <ul className="space-y-1 text-sm">
+            {request.attachments.map((attachment) => (
+              <li key={attachment.id}>
+                <a
+                  href={`/files/${attachment.id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-amber-800 hover:underline"
+                >
+                  {attachment.contentType.startsWith("image/") ? "🖼️" : "📎"} {attachment.filename}
+                </a>
+                <span className="ml-2 text-xs text-neutral-400">
+                  {attachment.createdAt.toLocaleString("th-TH")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="rounded-lg border border-neutral-200 bg-white p-5">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">เสนอราคาเบี้ยประกัน</h2>
