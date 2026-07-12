@@ -67,7 +67,14 @@ export default function App() {
       await submitInsuranceRequest(requestId, idToken, values);
       setPhase("success");
     } catch (error) {
-      setFormError(error instanceof SubmitRequestError ? error.message : "ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+      // Surface the real failure (token missing, network error, server rejection)
+      // instead of one generic message — indistinguishable errors made field
+      // debugging impossible.
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : "ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
+      setFormError(message);
       setPhase("form");
     }
   }
