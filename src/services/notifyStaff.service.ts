@@ -45,6 +45,23 @@ export async function notifyStaffKeywordEscalation(lineUserId: string, messageTe
   }
 }
 
+/** Alerts staff that an incoming customer event crashed, so failures surface before complaints do. */
+export async function notifyStaffProcessingError(eventType: string, errorMessage: string): Promise<void> {
+  const text = [
+    "⚠️ ระบบประมวลผลข้อความลูกค้าล้มเหลว",
+    `ประเภทเหตุการณ์: ${eventType}`,
+    `สาเหตุ: ${errorMessage}`,
+    "ลูกค้าอาจไม่ได้รับการตอบกลับ กรุณาตรวจสอบแชทล่าสุด",
+  ].join("\n");
+
+  try {
+    await pushMessage(env.LINE_STAFF_GROUP_ID, { type: "text", text });
+  } catch (error) {
+    // The alert itself failing must never cascade.
+    logger.error({ error }, "Failed to push processing-error alert to staff group");
+  }
+}
+
 export async function notifyStaffCarInfoSubmitted(request: InsuranceRequest): Promise<void> {
   const text = [
     "📄 ลูกค้าส่งข้อมูลรถแล้ว",

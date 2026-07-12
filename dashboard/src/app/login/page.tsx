@@ -6,7 +6,13 @@ export default async function LoginPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const hasError = resolvedSearchParams.error !== undefined;
+  const errorCode = resolvedSearchParams.error;
+  const errorMessage =
+    errorCode === "locked"
+      ? "พยายามเข้าสู่ระบบผิดหลายครั้งเกินไป กรุณารอ 15 นาทีแล้วลองใหม่"
+      : errorCode !== undefined
+        ? "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+        : null;
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -43,9 +49,7 @@ export default async function LoginPage({
           className="mb-4 w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-amber-700 focus:outline-none"
         />
 
-        {hasError && (
-          <p className="mb-4 text-sm text-red-600">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
-        )}
+        {errorMessage && <p className="mb-4 text-sm text-red-600">{errorMessage}</p>}
 
         <button
           type="submit"

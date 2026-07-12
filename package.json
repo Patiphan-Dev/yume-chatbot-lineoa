@@ -15,7 +15,8 @@
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "richmenu:setup": "ts-node src/scripts/setupRichMenu.ts"
+    "richmenu:setup": "ts-node src/scripts/setupRichMenu.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@line/bot-sdk": "^9.5.0",
@@ -33,6 +34,7 @@
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "vitest": "^4.1.10"
   }
 }

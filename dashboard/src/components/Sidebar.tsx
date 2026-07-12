@@ -35,9 +35,16 @@ const ACTIVITY_ITEM: NavItem = {
   isActive: (pathname) => pathname.startsWith("/activity"),
 };
 
+const REPORTS_ITEM: NavItem = {
+  href: "/reports",
+  label: "รายงาน",
+  icon: "📊",
+  isActive: (pathname) => pathname.startsWith("/reports"),
+};
+
 export function SidebarNav({ isAdmin }: SidebarNavProps) {
   const pathname = usePathname();
-  const items = isAdmin ? [REQUEST_ITEM, STAFF_ITEM, ACTIVITY_ITEM] : [REQUEST_ITEM];
+  const items = isAdmin ? [REQUEST_ITEM, STAFF_ITEM, REPORTS_ITEM, ACTIVITY_ITEM] : [REQUEST_ITEM];
 
   return (
     <nav className="flex flex-col gap-1">

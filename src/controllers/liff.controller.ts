@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { z } from "zod";
+import { toCommonEraYear } from "../lib/thaiYear";
 import { submitLiffInsuranceRequest } from "../services/liffSubmission.service";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -10,7 +11,12 @@ const submitBodySchema = z.object({
   province: z.string().min(1),
   brand: z.string().min(1),
   model: z.string().min(1),
-  year: z.coerce.number().int().gte(1990).lte(CURRENT_YEAR + 1),
+  // Accepts both ค.ศ. (2025) and พ.ศ. (2568); normalized to CE before the range check.
+  year: z.coerce
+    .number()
+    .int()
+    .transform(toCommonEraYear)
+    .pipe(z.number().gte(1990).lte(CURRENT_YEAR + 1)),
   chassisNumber: z.string().min(1),
 });
 

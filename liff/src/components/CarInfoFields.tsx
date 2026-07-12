@@ -59,15 +59,15 @@ export function CarInfoFields({ values, onChange }: CarInfoFieldsProps) {
       </label>
 
       <label className="field">
-        <span>ปีรถ</span>
+        <span>ปีรถ (กรอกได้ทั้ง ค.ศ. และ พ.ศ.)</span>
         <input
           type="number"
           inputMode="numeric"
           min={1990}
-          max={CURRENT_YEAR + 1}
+          max={CURRENT_YEAR + 1 + 543}
           value={values.year}
           onChange={(event) => onChange("year", event.target.value)}
-          placeholder={String(CURRENT_YEAR)}
+          placeholder={`${CURRENT_YEAR} หรือ ${CURRENT_YEAR + 543}`}
           required
         />
       </label>

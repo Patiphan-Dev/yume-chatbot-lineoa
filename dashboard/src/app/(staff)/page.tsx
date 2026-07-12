@@ -13,6 +13,8 @@ const STATUS_TABS: { value: RequestStatus | "ALL"; label: string }[] = [
   { value: "CANCELLED", label: "ยกเลิก" },
 ];
 
+const PAGE_SIZE = 20;
+
 function firstValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -33,24 +35,37 @@ export default async function RequestsPage({
   const resolvedSearchParams = await searchParams;
   const statusFilter = parseStatusFilter(resolvedSearchParams.status);
   const query = firstValue(resolvedSearchParams.q)?.trim() ?? "";
+  const page = Math.max(1, Number.parseInt(firstValue(resolvedSearchParams.page) ?? "1", 10) || 1);
 
-  const requests = await prisma.insuranceRequest.findMany({
-    where: {
-      ...(statusFilter !== "ALL" ? { status: statusFilter } : {}),
-      ...(query
-        ? {
-            OR: [
-              { carRegistration: { contains: query, mode: "insensitive" as const } },
-              { brand: { contains: query, mode: "insensitive" as const } },
-              { model: { contains: query, mode: "insensitive" as const } },
-              { user: { displayName: { contains: query, mode: "insensitive" as const } } },
-            ],
-          }
-        : {}),
-    },
-    include: { user: true },
-    orderBy: { createdAt: "desc" },
-    take: 100,
+  const where = {
+    ...(statusFilter !== "ALL" ? { status: statusFilter } : {}),
+    ...(query
+      ? {
+          OR: [
+            { carRegistration: { contains: query, mode: "insensitive" as const } },
+            { brand: { contains: query, mode: "insensitive" as const } },
+            { model: { contains: query, mode: "insensitive" as const } },
+            { user: { displayName: { contains: query, mode: "insensitive" as const } } },
+          ],
+        }
+      : {}),
+  };
+
+  const [requests, totalCount] = await Promise.all([
+    prisma.insuranceRequest.findMany({
+      where,
+      include: { user: true },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.insuranceRequest.count({ where }),
+  ]);
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const pageHref = (target: number) => ({
+    pathname: "/",
+    query: { status: statusFilter, q: query || undefined, page: target },
   });
 
   return (
@@ -139,6 +154,26 @@ export default async function RequestsPage({
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between text-sm text-neutral-500">
+          <span>
+            หน้า {page} จาก {totalPages} · ทั้งหมด {totalCount.toLocaleString("th-TH")} รายการ
+          </span>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <Link href={pageHref(page - 1)} className="rounded-md border border-neutral-300 px-3 py-1.5 hover:bg-neutral-100">
+                ← ก่อนหน้า
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link href={pageHref(page + 1)} className="rounded-md border border-neutral-300 px-3 py-1.5 hover:bg-neutral-100">
+                ถัดไป →
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -90,6 +90,16 @@ model StaffMember {
   @@map("staff_members")
 }
 
+// LINE retries webhook deliveries on timeout; recording each webhookEventId
+// lets the controller skip events it has already processed.
+model ProcessedWebhookEvent {
+  id        String   @id
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("processed_webhook_events")
+}
+
 // Append-only audit trail of staff actions (logins, quotes, member management).
 model ActivityLog {
   id        String   @id @default(cuid())
