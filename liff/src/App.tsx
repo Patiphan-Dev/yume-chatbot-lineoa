@@ -24,23 +24,27 @@ export default function App() {
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("requestId");
-    const insuranceType = params.get("insuranceType");
-
-    if (!id) {
-      setFatalMessage("ลิงก์ไม่ถูกต้อง กรุณาเปิดจากข้อความที่แชทส่งมา");
-      setPhase("fatal-error");
-      return;
-    }
-
-    setRequestId(id);
-    if (isInsuranceType(insuranceType)) {
-      setInsuranceTypeLabel(INSURANCE_TYPE_LABEL_TH[insuranceType]);
-    }
-
+    // liff.init() must run before reading the query string: links opened via
+    // https://liff.line.me/<id>?requestId=... arrive with the real query wrapped
+    // inside a liff.state param, which the SDK only unwraps during init.
     initLiff()
-      .then(() => setPhase("form"))
+      .then(() => {
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("requestId");
+        const insuranceType = params.get("insuranceType");
+
+        if (!id) {
+          setFatalMessage("ลิงก์ไม่ถูกต้อง กรุณาเปิดจากข้อความที่แชทส่งมา");
+          setPhase("fatal-error");
+          return;
+        }
+
+        setRequestId(id);
+        if (isInsuranceType(insuranceType)) {
+          setInsuranceTypeLabel(INSURANCE_TYPE_LABEL_TH[insuranceType]);
+        }
+        setPhase("form");
+      })
       .catch(() => {
         setFatalMessage("กรุณาเปิดฟอร์มนี้จากแอป LINE");
         setPhase("fatal-error");
